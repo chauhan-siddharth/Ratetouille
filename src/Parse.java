@@ -62,23 +62,32 @@ public class Parse {
         ArrayList<pureReview> stemmedReview = new ArrayList<pureReview>();
 //        ArrayList<String> stemmered = new ArrayList<String>();
 //        for (ReadCSV.Reviews index: data1) {
-          for(int i = 1; i< data1.size();i++){
+          for(int i = 0; i< data1.size();i++){
             ArrayList<String> pureTokens = new ArrayList<String>();
 //            System.out.println(data1.get(i).restaurantID + " => " + data1.get(i).review);
             String[] tokens = new String[0];
-            tokens = data1.get(i).review.split(delimiter);
+            tokens = data1.get(i).review.toLowerCase().split(delimiter);
               for (String token: tokens) {
 //                  System.out.println(token);
                   if(searchStopWord(token) == -1) {
                     pureTokens.add(token);
                   }
                 }
+              //stemming
+              Stemmer st = new Stemmer();
+              ArrayList<String> stemmed = new ArrayList<>();
+              for(String token:pureTokens){
+                  st.add(token.toCharArray(), token.length());
+                  st.stem();
+                  stemmed.add(st.toString());
+                  st = new Stemmer();
+              }
 //             System.out.println(pureTokens);
             pureReview r1 = new pureReview();
-            r1.setReviewArray(data1.get(i).restaurantID, pureTokens);
+            r1.setReviewArray(data1.get(i).restaurantID, stemmed);
             stemmedReview.add(r1);
         }
- //         printpure(stemmedReview);
+//         printpure(stemmedReview);
 //        System.out.println(stemmedReview.size());
         return stemmedReview;
    }
