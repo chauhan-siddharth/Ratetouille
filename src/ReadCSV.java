@@ -34,7 +34,7 @@ public class ReadCSV {
         ArrayList<Reviews> data = new ArrayList<>();
         try {
 //parsing a CSV file into CSVReader class constructor
-            reader = new CSVReader(new FileReader("try.csv"));
+            reader = new CSVReader(new FileReader("new.csv"));
             String[] nextLine;
             int i = 0;
 //reads one line at a time

@@ -7,6 +7,8 @@ public class kpt_project_restaurant {
     String[] positive = new String[0];
     String[] negative = new String[0];
     String[] neutral = new String[0];
+    ArrayList<String> restID = new ArrayList<>();
+    ArrayList<ArrayList<Integer>> reviewRate = new ArrayList<ArrayList<Integer>>();
     public void readReviews(){
         ReadCSV read1 = new ReadCSV();
         data1 = read1.allTask();
@@ -14,12 +16,12 @@ public class kpt_project_restaurant {
     }
 
     public void stemReviews(ArrayList<ReadCSV.Reviews> data){
-        ArrayList<ReadCSV.Reviews> data1 = new ArrayList<>();
+//        ArrayList<ReadCSV.Reviews> data1 = new ArrayList<>();
         Parse p1 = new Parse();
         ReadCSV r1 = new ReadCSV();
         String filename = "stopwords.txt";
         String delimiter = "[ '.,&#?!:;$%+()\\-\\/*\"]+";
-        data1 = r1.allTask();
+//        data1 = r1.allTask();
         p1.getStopWords(filename);
         pure = p1.tokenize(delimiter, data1);
         p1.printpure(pure);
@@ -111,21 +113,101 @@ public class kpt_project_restaurant {
         return netValue;
     }
 
-    public void sentimentAnalysis(){
+
+//    public class analysis{
+//        String restaurantID;
+//        ArrayList<Integer> ratings;
+//
+//        public void addRestaurant(String rid, Integer individualRating){
+//            restaurantID = rid;
+//            ratings.set(0,individualRating);
+//        }
+//
+//        public void addRating(Integer individualRating){
+//            ratings.add(individualRating);
+//        }
+//    }
+
+    public void sentimentAnalysis() {
+        ArrayList<Integer> rate;
         System.out.println(pure);
-        for (Parse.pureReview entry:pure) {
-            int value = 0;
-            value = calculateReviewRating(entry);
-            if(value == 0 ){
-                System.out.println("Neutral Review");
+        // ArrayList<analysis> list1 = new ArrayList<analysis>();
+        for (int i = 0; i < pure.size(); i++) {
+            String string = pure.get(i).restaurantID;
+            int value = calculateReviewRating(pure.get(i));
+            if (!restID.contains(string)) {
+                restID.add(string);
+                rate = new ArrayList<Integer>();
+                rate.add(value);
+                reviewRate.add(rate);
+            } else {
+                int index = restID.indexOf(string);
+                rate = reviewRate.get(index);
+                rate.add(value);
+                reviewRate.set(index, rate);
             }
-            else if(value > 0){
-                System.out.println("Positive Review");
+
+    }
+        String result = "";
+        for (int i = 0; i< reviewRate.size(); i++) {
+            result += String.format("%-15s", restID.get(i));
+            rate = reviewRate.get(i);
+            for(int j = 0 ; j < rate.size(); j++)
+            {
+
+                result += rate.get(j) + "\t";
+
             }
-            else {
-                System.out.println("Negative Review");
-            }
+            result += "\n";
+
         }
+        System.out.println(restID.size());
+        System.out.println(result);
+
+
+//        for (Parse.pureReview entry:pure) {
+//            int value;
+//            value = calculateReviewRating(entry);
+//            if(value == 0 ){
+//                System.out.println("Neutral Review");
+//            }
+//            else if(value > 0){
+//                System.out.println("Positive Review");
+//            }
+//            else {
+//                System.out.println("Negative Review");
+//            }
+//        }
+//        System.out.println(list1);
+    }
+
+    public void compute(){
+            ArrayList<Integer> Average = new ArrayList<Integer>();
+            int count = 0;
+        for (int i =0; i< restID.size(); i++) {
+            ArrayList<Integer> rate =  reviewRate.get(i);
+            int sum = 0;
+            int value = 0;
+            for (Integer rating: rate) {
+                count = count + 1;
+                if(rating > 0){
+                    value = 1;
+                }
+                else if(rating < 0){
+                    value = -1;
+                }
+                else{
+                    value = 0;
+                }
+
+                sum = sum + value;
+            }
+            Average.add(i, sum);
+        }
+        for (int i = 0; i < restID.size(); i++) {
+            System.out.println(restID.get(i) + "\t" + Average.get(i));
+        }
+        System.out.println("Total Review Count is = " + count);
     }
 
     public static void main(String[] args) {
@@ -135,5 +217,6 @@ public class kpt_project_restaurant {
         p1.stemReviews(p1.data1);
         p1.readWords();
         p1.sentimentAnalysis();
+        p1.compute();
     }
 }
