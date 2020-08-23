@@ -1,2 +1,3 @@
 # Ratetouille
-KPT_Lab_Project
+Text Classification of customer reviews using Natural LanguageProcessing.
+
